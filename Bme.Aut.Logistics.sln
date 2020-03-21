@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29905.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bme.Aut.Logistics", "Bme.Aut.Logistics\Bme.Aut.Logistics.csproj", "{0CA107CF-F21A-4B56-8CA0-BD80289890E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bme.Aut.Logistics.Test", "Bme.Aut.Logistics.Test\Bme.Aut.Logistics.Test.csproj", "{3F306350-2771-4303-A48B-987EC5E7AED2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CA107CF-F21A-4B56-8CA0-BD80289890E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CA107CF-F21A-4B56-8CA0-BD80289890E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CA107CF-F21A-4B56-8CA0-BD80289890E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CA107CF-F21A-4B56-8CA0-BD80289890E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F306350-2771-4303-A48B-987EC5E7AED2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F306350-2771-4303-A48B-987EC5E7AED2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F306350-2771-4303-A48B-987EC5E7AED2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F306350-2771-4303-A48B-987EC5E7AED2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A9DA2BFE-52F6-41C5-917F-B74D56235211}
+	EndGlobalSection
+EndGlobal

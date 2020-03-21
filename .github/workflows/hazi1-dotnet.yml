@@ -1,0 +1,25 @@
+name: Hazi 1 .NET
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Prepare .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "3.1.102"
+
+      - name: Build .NET code
+        run: dotnet build
+
+      - name: Run .NET unit tests
+        run: dotnet test
+        if: github.event.before != '0000000000000000000000000000000000000000'
