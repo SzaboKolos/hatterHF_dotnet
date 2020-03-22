@@ -12,4 +12,4 @@ Ezt a _Visual Studio Installer_ (start menüben keresendő) segítségével tele
 
 ## Tesztek futtatása
 
-A kiadott projekt váz tartalmaz teszteket is, amivel ellenőrizhető a megoldás. A tesztek futtatására a Visual Studio [_Test Explorer_](https://docs.microsoft.com/en-us/visualstudio/test/run-unit-tests-with-test-explorer?view=vs-2019)-t használhatjuk.
+A kiadott projekt váz tartalmaz teszteket is, amivel ellenőrizhető a megoldás. A tesztek futtatására a Visual Studio [_Test Explorer_](https://docs.microsoft.com/en-us/visualstudio/test/run-unit-tests-with-test-explorer?view=vs-2019)-t használhatjuk. Fontos, hogy a teszt kódot ne módosítsátok, ezt beadáskor ellenőrizzük.
