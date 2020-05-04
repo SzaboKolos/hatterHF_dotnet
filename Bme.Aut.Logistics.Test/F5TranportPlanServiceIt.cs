@@ -181,6 +181,7 @@ namespace Bme.Aut.Logistics.Test
                 var plan = createAndAddPlanWithSections(dbContext, 2);
                 var fromMilestone = createAndSaveNewMilestone(dbContext);
                 var toMilestone = createAndSaveNewMilestone(dbContext);
+                var originalSection1ToMilestone = plan.Sections[1].ToMilestone;
 
                 service.AddSection(plan.Id, fromMilestone.Id, toMilestone.Id, 1);
 
@@ -189,14 +190,9 @@ namespace Bme.Aut.Logistics.Test
                 Assert.AreEqual(3, planAfterAdd.Sections.Count);
 
                 var sections = planAfterAdd.Sections.OrderBy(s => s.Number).ToList();
-                var oldSection1 = sections[0];
-                assertSection(oldSection1, 0, plan.Sections[0].FromMilestone, fromMilestone);
-
-                var newSection = sections[1];
-                assertSection(newSection, 1, fromMilestone, toMilestone);
-
-                var oldSection2 = sections[2];
-                assertSection(oldSection2, 2, toMilestone, plan.Sections[1].ToMilestone);
+                assertSection(sections[0], 0, plan.Sections[0].FromMilestone, fromMilestone);
+                assertSection(sections[1], 1, fromMilestone, toMilestone);
+                assertSection(sections[2], 2, toMilestone, originalSection1ToMilestone);
             }
         }
 
