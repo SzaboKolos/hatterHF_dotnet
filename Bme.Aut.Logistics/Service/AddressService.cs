@@ -35,7 +35,16 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani a 4. c. feladat szerint
         public void RenameStreet(string country, string zipCode, string oldStreet, string newStreet)
         {
-            throw new NotImplementedException();
+             var addr = dbContext.Addresses.ToList().Where(x => x.Country.Equals(country, StringComparison.InvariantCultureIgnoreCase)
+                                                             && x.ZipCode.Equals(zipCode, StringComparison.InvariantCultureIgnoreCase)
+                                                             && x.Street.Equals(oldStreet, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        
+            foreach (var a in addr)
+            {
+                a.Street = newStreet;
+                dbContext.SaveChanges();
+            }
+            
         }
     }
 }
