@@ -19,6 +19,7 @@ namespace Bme.Aut.Logistics
             var dbContext = new LogisticsDbContext(dbContextOptions);
             dbContext.Database.EnsureCreated();
             var svc = new Service.AddressService(dbContext);
+            global::System.Console.WriteLine("test");
         }
     }
 }
