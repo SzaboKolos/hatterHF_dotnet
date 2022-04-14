@@ -26,7 +26,10 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani az 4. b. feladat szerint
         public List<Address> FindByGeoLatBetweenAndGeoLngBetween(double minLat, double maxLat, double minLng, double maxLng)
         {
-            throw new NotImplementedException();
+            return dbContext.Addresses.ToList().Where(c => c.GeoLatitude <= maxLat
+                                                        && c.GeoLatitude > minLat
+                                                        && c.GeoLongitude <= maxLng
+                                                        && c.GeoLongitude > minLng).ToList();
         }
 
         // TODO: Megvalósítani a 4. c. feladat szerint
