@@ -20,7 +20,7 @@ namespace Bme.Aut.Logistics.Service
         // Tipp 2: Sajnos nem tudja leforditani az EF a lekerdezest. Muszaj memoriaban csinalni az osszehasonlitast: dbContext.Addresses.ToList().Where(...
         public List<Address> FindByCityIgnoreCase(string city)
         {
-            throw new NotImplementedException();
+            return dbContext.Addresses.ToList().Where(c => c.City.Equals(city, StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
         // TODO: Megvalósítani az 4. b. feladat szerint
