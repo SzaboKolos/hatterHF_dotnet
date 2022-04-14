@@ -20,7 +20,22 @@ namespace Bme.Aut.Logistics.Service
         // TIPP: ne fejeltsd a TransportPlan.Section eléréséhez az Include-ot
         public List<Milestone> GetFirstAndLastMilestone(long transportPlanId)
         {
-            throw new NotImplementedException();
+            List<Milestone> result = new List<Milestone>();
+            if ((dbContext.TransportPlans.First(t => t.Id == transportPlanId).Sections) != null)
+            {
+                if (dbContext.TransportPlans.First(x => x.Id == transportPlanId) != null) {
+                    result.Add((dbContext.TransportPlans
+                        .First(x => x.Id == transportPlanId).Sections
+                        .OrderByDescending(y => y.Id).First().FromMilestone));
+                    result.Add((dbContext.TransportPlans
+                        .First(x => x.Id == transportPlanId).Sections
+                        .OrderByDescending(y => y.Id).Last().ToMilestone));
+                }
+                else
+                    throw new ArgumentException();
+            }
+            //üres lesz, ha nem jut be az első if ágra
+            return result;
         }
 
         // TODO: Megvalósítani az 5. b. feladat szerint
@@ -32,7 +47,9 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani az 5. c. feladat szerint
         public void AddSection(long planId, long fromMilestoneId, long toMilestoneId, int number)
         {
-            throw new NotImplementedException();
+            dbContext.TransportPlans.First(x => x.Id == planId).Sections.Add(new Section());
+
+            dbContext.SaveChanges();
         }
     }
 }
