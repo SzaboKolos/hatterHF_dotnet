@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Bme.Aut.Logistics.Test": {
+      "commandName": "Project"
+    },
+    "WSL": {
+      "commandName": "WSL2",
+      "environmentVariables": {},
+      "distributionName": ""
+    }
+  }
+}
