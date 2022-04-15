@@ -1,4 +1,6 @@
-﻿namespace Bme.Aut.Logistics.Model
+﻿using System.Collections.Generic;
+
+namespace Bme.Aut.Logistics.Model
 {
     public class Section
     {
@@ -10,5 +12,6 @@
         public TransportPlan TransportPlan { get; set; }
         public long TransportPlanId { get; set; }
         public int Number { get; set; }
+
     }
 }
