@@ -17,13 +17,42 @@ namespace Bme.Aut.Logistics.Service
         }
         public TransportPlan FindTransportplanById(long id)
         {
-            if (dbContext.TransportPlans.ToList().First(x => x.Id == id) != null )
+            if (existsPlan(id))
                 return dbContext.TransportPlans.First(x => x.Id == id);
             return null;
+        }
+        public Milestone FindMilestoneById(long planId, long milestoneId)
+        {
+            if (existsMilestone(planId, milestoneId))
+            {
+                if (isToMilestone(planId, milestoneId))
+                {
+                    return FindTransportplanById(planId).Sections
+                        .First(x => x.ToMilestoneId == milestoneId).ToMilestone;
+                } else
+                {
+                    return FindTransportplanById(planId).Sections
+                        .First(x => x.FromMilestoneId == milestoneId).FromMilestone;
+                }
+
+            }
+            return null;
+        }
+        public Boolean isToMilestone(long planId, long milestoneId)
+        {
+            if (existsMilestone(planId, milestoneId) && FindTransportplanById(planId).Sections.Any(x => x.ToMilestoneId == milestoneId))
+                return true;
+            return false;
         }
         public Boolean existsPlan(long id)
         {
             return dbContext.TransportPlans.Any(x => x.Id == id);
+        }
+        public Boolean existsMilestone(long planId, long milestoneId)
+        {
+            return FindTransportplanById(planId).Sections
+                .ToList()
+                .Any(x => x.ToMilestoneId == milestoneId || x.FromMilestoneId == milestoneId);
         }
 
         // TODO: Megvalósítani az 5. a. feladat szerint
@@ -48,57 +77,27 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani az 5. b. feladat szerint
         public void RegisterDelay(long planId, long milestoneId, int delayInMinutes)
         {
-            if (FindTransportplanById(planId) == null || 
-                FindTransportplanById(planId).Sections.ToList()
-                .Where(x=> milestoneId == x.FromMilestoneId 
-                || milestoneId == x.ToMilestoneId).ToList() == null)
+            if (!existsPlan(planId) || !existsMilestone(planId,milestoneId))
             {
                 throw new ArgumentException();
             }
             else
             {
-                if (milestoneId == FindTransportplanById(planId).Sections.ToList()
-                .Where(x => milestoneId == x.FromMilestoneId).First().FromMilestoneId)
-                {
-                    FindTransportplanById(planId).Sections.ToList()
-                    .Where(x => milestoneId == x.FromMilestoneId).First().FromMilestone.PlannedTime.AddMinutes(delayInMinutes);
+                Console.WriteLine(FindMilestoneById(planId, milestoneId));
+                FindMilestoneById(planId, milestoneId).PlannedTime.AddMinutes(delayInMinutes);
+                Console.WriteLine(FindMilestoneById(planId, milestoneId));
 
-                    if (FindTransportplanById(planId).Sections.ToList()
-                    .Where(x => milestoneId == x.FromMilestoneId).First().Number != 0)
-                    {
-                        var prevSectionNum = FindTransportplanById(planId).Sections.ToList()
-                        .Where(x => milestoneId == x.FromMilestoneId).First().Number - 1;
-                        FindTransportplanById(planId).Sections.ToList()
-                        .Where(x => x.Number == prevSectionNum).First().ToMilestone.PlannedTime.AddMinutes(delayInMinutes);
-                    }
-
-                } else
-                {
-                    FindTransportplanById(planId).Sections.ToList()
-                    .Where(x => milestoneId == x.ToMilestoneId).First().ToMilestone.PlannedTime.AddMinutes(delayInMinutes);
-
-                    if (FindTransportplanById(planId).Sections.ToList()
-                    .Where(x => milestoneId == x.FromMilestoneId).First().Number != 
-                    (FindTransportplanById(planId).Sections
-                    .OrderByDescending(y => y.Id).First().Number))
-                    {
-                        var nextSectionNum = FindTransportplanById(planId).Sections.ToList()
-                        .Where(x => milestoneId == x.FromMilestoneId).First().Number + 1;
-                        FindTransportplanById(planId).Sections.ToList()
-                        .Where(x => x.Number == nextSectionNum).First().FromMilestone.PlannedTime.AddMinutes(delayInMinutes);
-                    }
-
-                }
+                dbContext.SaveChanges();
             }
         }
 
         // TODO: Megvalósítani az 5. c. feladat szerint
         public void AddSection(long planId, long fromMilestoneId, long toMilestoneId, int number)
         {
-              if (planId != FindTransportplanById(planId).Id)
-               throw new ArgumentException();
+            if (planId != FindTransportplanById(planId).Id)
+                throw new ArgumentException();
 
-              if (fromMilestoneId == null || toMilestoneId == null)
+            if (existsMilestone(planId,fromMilestoneId) || existsMilestone(planId, toMilestoneId))
                 throw new ArgumentException();
 
             var newSection = new Section();
