@@ -17,9 +17,13 @@ namespace Bme.Aut.Logistics.Service
         }
         public TransportPlan FindTransportplanById(long id)
         {
-            if (dbContext.TransportPlans.ToList().First(x => x.Id == id) != null)
+            if (dbContext.TransportPlans.ToList().First(x => x.Id == id) != null )
                 return dbContext.TransportPlans.First(x => x.Id == id);
             return null;
+        }
+        public Boolean existsPlan(long id)
+        {
+            return dbContext.TransportPlans.Any(x => x.Id == id);
         }
 
         // TODO: Megvalósítani az 5. a. feladat szerint
@@ -27,21 +31,18 @@ namespace Bme.Aut.Logistics.Service
         public List<Milestone> GetFirstAndLastMilestone(long transportPlanId)
         {
             List<Milestone> result = new List<Milestone>();
-            if (FindTransportplanById(transportPlanId) != null)
+            if (existsPlan(transportPlanId))
             {
-                if (FindTransportplanById(transportPlanId) != null) {
+                if (FindTransportplanById(transportPlanId).Sections.Any()) {
                     result.Add(FindTransportplanById(transportPlanId).Sections
                         .OrderByDescending(y => y.Id).Last().FromMilestone);
                     result.Add(FindTransportplanById(transportPlanId).Sections
                         .OrderByDescending(y => y.Id).First().ToMilestone);
-                    return result;
                 }
-                else
-                    throw new ArgumentException();
             }
-            //üres lesz, ha nem jut be az első if ágra
-            Console.WriteLine(result);
-            return new List<Milestone>(null);
+            else
+                throw new ArgumentException();
+            return result;
         }
 
         // TODO: Megvalósítani az 5. b. feladat szerint
@@ -94,14 +95,12 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani az 5. c. feladat szerint
         public void AddSection(long planId, long fromMilestoneId, long toMilestoneId, int number)
         {
-            /*  if (planId != FindTransportplanById(planId).Id 
-                  || fromMilestoneId != FindTransportplanById(planId).Sections
-                              .Where(s => s.Number == number)
-                              .First().FromMilestone
-              {
-                  throw new ArgumentException();
+              if (planId != FindTransportplanById(planId).Id)
+               throw new ArgumentException();
 
-              }*/
+              if (fromMilestoneId == null || toMilestoneId == null)
+                throw new ArgumentException();
+
             var newSection = new Section();
             newSection.FromMilestoneId = fromMilestoneId;
             newSection.ToMilestoneId = toMilestoneId;

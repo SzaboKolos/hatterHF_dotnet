@@ -11,5 +11,11 @@ namespace Bme.Aut.Logistics.Model
         public DateTime PlannedTime { get; set; }
 
         public List<Action> Action { get; set; }
+
+        override
+        public string ToString()
+        {
+            return ("MS: "+ Id + " [" + PlannedTime + "]");
+        }
     }
 }
