@@ -21,6 +21,12 @@ namespace Bme.Aut.Logistics.Service
                 return dbContext.TransportPlans.First(x => x.Id == id);
             return null;
         }
+        public Section FindSectionById(long planId, long sectionId) 
+        {
+            if (existsSection(planId, sectionId))
+                return FindTransportplanById(planId).Sections.First(x => x.Id == sectionId);
+            return null;
+        }
         public Milestone FindMilestoneById(long planId, long milestoneId)
         {
             if (existsMilestone(planId, milestoneId))
@@ -47,6 +53,10 @@ namespace Bme.Aut.Logistics.Service
         public Boolean existsPlan(long id)
         {
             return dbContext.TransportPlans.Any(x => x.Id == id);
+        }
+        public Boolean existsSection(long planId, long sectionId)
+        {
+            return FindTransportplanById(planId).Sections.Any(x => x.Id == sectionId);
         }
         public Boolean existsMilestone(long planId, long milestoneId)
         {
