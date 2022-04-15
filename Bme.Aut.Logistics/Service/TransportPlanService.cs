@@ -95,11 +95,22 @@ namespace Bme.Aut.Logistics.Service
             {
                 FindMilestoneById(planId, milestoneId).PlannedTime = 
                                 FindMilestoneById(planId, milestoneId).PlannedTime.AddMinutes(delayInMinutes);
-                if (isToMilestone(planId, milestoneId) )
+
+                //From
+                if (isToMilestone(planId, milestoneId))
                 {
-                    int nextSection = FindTransportplanById(planId).Sections.Where(x => x.ToMilestoneId == milestoneId).First().Number;
-                    FindTransportplanById(planId).Sections[nextSection].FromMilestone.PlannedTime =
-                                FindTransportplanById(planId).Sections[nextSection].FromMilestone.PlannedTime.AddMinutes(delayInMinutes);
+                    int nextNum = FindTransportplanById(planId).Sections.First(x => x.ToMilestoneId == milestoneId).Number + 1;                               
+                        FindTransportplanById(planId).Sections[nextNum].FromMilestone.PlannedTime =
+                                    FindTransportplanById(planId).Sections[nextNum].FromMilestone.PlannedTime.AddMinutes(delayInMinutes);
+                }
+                //To
+                else
+                {
+                    int num = FindTransportplanById(planId).Sections.First(x => x.FromMilestoneId == milestoneId).Number;
+                        FindTransportplanById(planId).Sections[num].ToMilestone.PlannedTime =
+                                    FindTransportplanById(planId).Sections[num].ToMilestone.PlannedTime.AddMinutes(delayInMinutes);
+                    
+                        Console.WriteLine("prev " + num);
                 }
 
                 dbContext.SaveChanges();
@@ -111,8 +122,9 @@ namespace Bme.Aut.Logistics.Service
         {
             if (!existsPlan(planId))
                 throw new ArgumentException();
-           if (planId != FindTransportplanById(planId).Id)
-               throw new ArgumentException();
+
+            if (planId != FindTransportplanById(planId).Id)
+                throw new ArgumentException();
 
             if (!existsMilestone(planId,fromMilestoneId) || !existsMilestone(planId, toMilestoneId))
                 throw new ArgumentException();
@@ -134,7 +146,6 @@ namespace Bme.Aut.Logistics.Service
             newSection.Number = number;
             dbContext.TransportPlans.First(x => x.Id == planId).Sections.Add(newSection);
             dbContext.SaveChanges();
-            
 
         }
     }
