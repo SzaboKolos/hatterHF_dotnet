@@ -100,9 +100,14 @@ namespace Bme.Aut.Logistics.Service
         public void AddSection(long planId, long fromMilestoneId, long toMilestoneId, int number)
         {
             if (planId != FindTransportplanById(planId).Id)
-            throw new ArgumentException();
+                throw new ArgumentException();
 
             if (existsMilestone(planId,fromMilestoneId) || existsMilestone(planId, toMilestoneId))
+                throw new ArgumentException();
+
+            int MAX = FindTransportplanById(planId).Sections.Count;
+            Console.WriteLine(MAX);
+            if (number < 0 || number > MAX) 
                 throw new ArgumentException();
 
             var newSection = new Section();
