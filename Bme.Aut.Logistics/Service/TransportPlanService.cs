@@ -83,9 +83,14 @@ namespace Bme.Aut.Logistics.Service
             }
             else
             {
-                Console.WriteLine(FindMilestoneById(planId, milestoneId));
-                FindMilestoneById(planId, milestoneId).PlannedTime.AddMinutes(delayInMinutes);
-                Console.WriteLine(FindMilestoneById(planId, milestoneId));
+                FindMilestoneById(planId, milestoneId).PlannedTime = 
+                                FindMilestoneById(planId, milestoneId).PlannedTime.AddMinutes(delayInMinutes);
+                if (isToMilestone(planId, milestoneId) )
+                {
+                    int nextSection = FindTransportplanById(planId).Sections.Where(x => x.ToMilestoneId == milestoneId).First().Number;
+                    FindTransportplanById(planId).Sections[nextSection].FromMilestone.PlannedTime =
+                                FindTransportplanById(planId).Sections[nextSection].FromMilestone.PlannedTime.AddMinutes(delayInMinutes);
+                }
 
                 dbContext.SaveChanges();
             }
@@ -95,7 +100,7 @@ namespace Bme.Aut.Logistics.Service
         public void AddSection(long planId, long fromMilestoneId, long toMilestoneId, int number)
         {
             if (planId != FindTransportplanById(planId).Id)
-                throw new ArgumentException();
+            throw new ArgumentException();
 
             if (existsMilestone(planId,fromMilestoneId) || existsMilestone(planId, toMilestoneId))
                 throw new ArgumentException();
