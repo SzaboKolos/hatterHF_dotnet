@@ -21,10 +21,10 @@ namespace Bme.Aut.Logistics.Service
                 return dbContext.TransportPlans.First(x => x.Id == id);
             return null;
         }
-        public Section FindSectionById(long planId, long sectionId) 
+        public Section FindSectionByNumber(long planId, int number) 
         {
-            if (existsSection(planId, sectionId))
-                return FindTransportplanById(planId).Sections.First(x => x.Id == sectionId);
+            if (existsSection(planId, number))
+                return FindTransportplanById(planId).Sections.First(x => x.Number == number);
             return null;
         }
         public Milestone FindMilestoneById(long planId, long milestoneId)
@@ -54,9 +54,9 @@ namespace Bme.Aut.Logistics.Service
         {
             return dbContext.TransportPlans.Any(x => x.Id == id);
         }
-        public Boolean existsSection(long planId, long sectionId)
+        public Boolean existsSection(long planId, int number)
         {
-            return FindTransportplanById(planId).Sections.Any(x => x.Id == sectionId);
+            return FindTransportplanById(planId).Sections.Any(x => x.Number == number);
         }
         public Boolean existsMilestone(long planId, long milestoneId)
         {
@@ -109,24 +109,33 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani az 5. c. feladat szerint
         public void AddSection(long planId, long fromMilestoneId, long toMilestoneId, int number)
         {
-            if (planId != FindTransportplanById(planId).Id)
+            if (!existsPlan(planId))
                 throw new ArgumentException();
+           if (planId != FindTransportplanById(planId).Id)
+               throw new ArgumentException();
 
-            if (existsMilestone(planId,fromMilestoneId) || existsMilestone(planId, toMilestoneId))
+            if (!existsMilestone(planId,fromMilestoneId) || !existsMilestone(planId, toMilestoneId))
                 throw new ArgumentException();
 
             int MAX = FindTransportplanById(planId).Sections.Count;
-            Console.WriteLine(MAX);
             if (number < 0 || number > MAX) 
                 throw new ArgumentException();
 
+            if (existsSection(planId, number))
+            {
+                foreach (var section in FindTransportplanById(planId).Sections.Where(x => x.Number >= number).ToList())
+                {
+                    section.Number += 1;
+                }
+            }
             var newSection = new Section();
             newSection.FromMilestoneId = fromMilestoneId;
             newSection.ToMilestoneId = toMilestoneId;
             newSection.Number = number;
             dbContext.TransportPlans.First(x => x.Id == planId).Sections.Add(newSection);
             dbContext.SaveChanges();
-          
+            
+
         }
     }
 }
