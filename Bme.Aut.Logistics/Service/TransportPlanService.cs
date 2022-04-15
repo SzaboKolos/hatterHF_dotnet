@@ -110,7 +110,6 @@ namespace Bme.Aut.Logistics.Service
                         FindTransportplanById(planId).Sections[num].ToMilestone.PlannedTime =
                                     FindTransportplanById(planId).Sections[num].ToMilestone.PlannedTime.AddMinutes(delayInMinutes);
                     
-                        Console.WriteLine("prev " + num);
                 }
 
                 dbContext.SaveChanges();
@@ -120,17 +119,10 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani az 5. c. feladat szerint
         public void AddSection(long planId, long fromMilestoneId, long toMilestoneId, int number)
         {
-            if (!existsPlan(planId))
-                throw new ArgumentException();
-
-            if (planId != FindTransportplanById(planId).Id)
-                throw new ArgumentException();
-
-            if (!existsMilestone(planId,fromMilestoneId) || !existsMilestone(planId, toMilestoneId))
-                throw new ArgumentException();
-
             int MAX = FindTransportplanById(planId).Sections.Count;
-            if (number < 0 || number > MAX) 
+            if (!existsPlan(planId) 
+                || !existsMilestone(planId,fromMilestoneId) || !existsMilestone(planId, toMilestoneId) 
+                || number < 0 || number > MAX)
                 throw new ArgumentException();
 
             if (existsSection(planId, number))
@@ -140,6 +132,7 @@ namespace Bme.Aut.Logistics.Service
                     section.Number += 1;
                 }
             }
+            Console.WriteLine("Max: "+ MAX + " | number: "+number);
             var newSection = new Section();
             newSection.FromMilestoneId = fromMilestoneId;
             newSection.ToMilestoneId = toMilestoneId;
