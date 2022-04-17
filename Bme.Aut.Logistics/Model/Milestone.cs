@@ -10,7 +10,7 @@ namespace Bme.Aut.Logistics.Model
         public long AddressId { get; set; }
         public DateTime PlannedTime { get; set; }
 
-        public List<Action> Action { get; set; }
+        public List<Action> Actions { get; set; }
 
         override
         public string ToString()

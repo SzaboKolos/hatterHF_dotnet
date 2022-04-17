@@ -42,8 +42,8 @@ namespace Bme.Aut.Logistics.Service
             foreach (var a in addr)
             {
                 a.Street = newStreet;
-                dbContext.SaveChanges();
             }
+            dbContext.SaveChanges();
             
         }
     }

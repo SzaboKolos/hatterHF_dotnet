@@ -23,30 +23,21 @@ namespace Bme.Aut.Logistics.Service
         }
         public Section FindSectionByNumber(long planId, int number) 
         {
-            if (existsSection(planId, number))
-                return FindTransportplanById(planId).Sections.First(x => x.Number == number);
+            if (existsSection(number))
+                return dbContext.Sections.First(x => x.Number == number);
             return null;
         }
-        public Milestone FindMilestoneById(long planId, long milestoneId)
+        public Milestone FindMilestoneById(long milestoneId)
         {
-            if (existsMilestone(planId, milestoneId))
+            if (existsMilestone(milestoneId))
             {
-                if (isToMilestone(planId, milestoneId))
-                {
-                    return FindTransportplanById(planId).Sections
-                        .First(x => x.ToMilestoneId == milestoneId).ToMilestone;
-                } else
-                {
-                    return FindTransportplanById(planId).Sections
-                        .First(x => x.FromMilestoneId == milestoneId).FromMilestone;
-                }
-
+                return dbContext.Milestones.ToList().First(x => x.Id == milestoneId);
             }
-            return null;
+           return null;
         }
         public Boolean isToMilestone(long planId, long milestoneId)
         {
-            if (existsMilestone(planId, milestoneId) && FindTransportplanById(planId).Sections.Any(x => x.ToMilestoneId == milestoneId))
+            if (existsMilestone(milestoneId) && FindTransportplanById(planId).Sections.Any(x => x.ToMilestoneId == milestoneId))
                 return true;
             return false;
         }
@@ -54,15 +45,17 @@ namespace Bme.Aut.Logistics.Service
         {
             return dbContext.TransportPlans.Any(x => x.Id == id);
         }
-        public Boolean existsSection(long planId, int number)
+        public Boolean existsSection(int number)
         {
-            return FindTransportplanById(planId).Sections.Any(x => x.Number == number);
+            return dbContext.Sections.Any(x => x.Number == number);
         }
-        public Boolean existsMilestone(long planId, long milestoneId)
+        public Boolean existsMilestone(long milestoneId)
         {
-            return FindTransportplanById(planId).Sections
-                .ToList()
-                .Any(x => x.ToMilestoneId == milestoneId || x.FromMilestoneId == milestoneId);
+            return dbContext.Milestones.Any(x=> x.Id == milestoneId);
+        }
+        public Boolean assignedMilestone(long planId, long milestoneId)
+        {
+            return FindTransportplanById(planId).Sections.Any(x => x.FromMilestoneId == milestoneId || x.ToMilestoneId == milestoneId);
         }
 
         // TODO: Megvalósítani az 5. a. feladat szerint
@@ -87,14 +80,14 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani az 5. b. feladat szerint
         public void RegisterDelay(long planId, long milestoneId, int delayInMinutes)
         {
-            if (!existsPlan(planId) || !existsMilestone(planId,milestoneId))
+            if (!existsPlan(planId) || !existsMilestone(milestoneId) || !assignedMilestone(planId,milestoneId))
             {
                 throw new ArgumentException();
             }
             else
             {
-                FindMilestoneById(planId, milestoneId).PlannedTime = 
-                                FindMilestoneById(planId, milestoneId).PlannedTime.AddMinutes(delayInMinutes);
+                FindMilestoneById(milestoneId).PlannedTime = 
+                                FindMilestoneById(milestoneId).PlannedTime.AddMinutes(delayInMinutes);
 
                 //From
                 if (isToMilestone(planId, milestoneId))
@@ -119,45 +112,74 @@ namespace Bme.Aut.Logistics.Service
         // TODO: Megvalósítani az 5. c. feladat szerint
         public void AddSection(long planId, long fromMilestoneId, long toMilestoneId, int number)
         {
+            Console.WriteLine("from: " + fromMilestoneId + " | to: " + toMilestoneId + " | number: "+number + " | planid: " +planId);
 
             //  F5/c/1
             if (!existsPlan(planId))
             {
-                throw new ArgumentException("Nem létező szállítási terv!");
+                throw new ArgumentException("Plan doesn't exist");
+            }
+            TransportPlan plan = FindTransportplanById(planId);
+
+            
+            if (FindMilestoneById(toMilestoneId) == null || FindMilestoneById(fromMilestoneId) == null )
+            {
+                throw new ArgumentException("Non-existent milestone");
             }
             
-            if (!existsMilestone(planId, fromMilestoneId) || !existsMilestone(planId, toMilestoneId))
-            {
-                throw new ArgumentException("Nem létező milestone!");
-            }
             //  F5/c/2
+            var MAX = plan.Sections.Count;
+            Console.WriteLine(MAX);
 
-            int MAX = FindTransportplanById(planId).Sections.Max(x => x.Number);
-            if (number < 0 || number >= MAX)
+            if (number < 0 || number > MAX)
             {
-                throw new ArgumentException("number hiba");
+                throw new ArgumentException("Variable \"number\" is out of range");
             }
-            //  F5/c/3
-            Section newSection = new Section();
-            newSection.Number = number;
-            newSection.FromMilestoneId = fromMilestoneId;
-            newSection.ToMilestoneId = toMilestoneId;
-            FindTransportplanById(planId).Sections.Add(newSection);
+
 
             //  F5/c/4
-            List<Section> sections = FindTransportplanById(planId).Sections.ToList().Where(x => x.Number >= number).ToList();
-            foreach (var section in sections)
-            {
-                section.Number += 1;
+            if (plan.Sections.Any(x => x.Number > number)) {
+                List<Section> sections = plan.Sections.Where(x => x.Number > number).ToList();
+                Console.WriteLine(sections.Max(x=> x.Number));
+                for (int i = 0; i < sections.Count; i++)
+                {
+                    sections[i].Number += 1;
+                }
+                Console.WriteLine(sections.Max(x => x.Number));
             }
-            //  F5/c/5
-            if (number > 0)
-                FindTransportplanById(planId).Sections[number + 1].FromMilestone = FindMilestoneById(planId, toMilestoneId);
-            if (number < MAX)
-                FindTransportplanById(planId).Sections[number - 1].ToMilestone = FindMilestoneById(planId, fromMilestoneId);
-            
+
+            //  F5/c/3
+            var newSection = new Section();
+            newSection.Number = number;
+            newSection.FromMilestoneId = fromMilestoneId;
+            newSection.FromMilestone = FindMilestoneById(fromMilestoneId);
+            Console.WriteLine(newSection.FromMilestone.ToString());
+            newSection.ToMilestoneId = toMilestoneId;
+            newSection.ToMilestone = FindMilestoneById(toMilestoneId);
+            Console.WriteLine(newSection.ToMilestone.ToString());
             dbContext.SaveChanges();
-        
+
+            //  F5/c/5
+            int prevNum = number - 1;
+            int nextNum = number + 1;
+            if (FindSectionByNumber(planId, prevNum) != null)
+            {
+                plan.Sections[prevNum].ToMilestone = newSection.FromMilestone;
+                plan.Sections[prevNum].ToMilestoneId = newSection.FromMilestoneId;
+            }
+            if (FindSectionByNumber(planId,nextNum) != null)
+            {
+                plan.Sections[nextNum].FromMilestone = newSection.ToMilestone;
+                plan.Sections[nextNum].FromMilestoneId = newSection.ToMilestoneId;
+                plan.Sections.Insert(number,newSection);
+                dbContext.SaveChanges();
+                return;
+            }
+            else
+            {
+                FindTransportplanById(planId).Sections.Add(newSection);
+                dbContext.SaveChanges();
+            }
         }
     }
 }
