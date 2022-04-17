@@ -138,14 +138,12 @@ namespace Bme.Aut.Logistics.Service
 
 
             //  F5/c/4
-            if (plan.Sections.Any(x => x.Number > number)) {
-                List<Section> sections = plan.Sections.Where(x => x.Number > number).ToList();
-                Console.WriteLine(sections.Max(x=> x.Number));
+            if (plan.Sections.Any(x => x.Number >= number)) {
+                List<Section> sections = plan.Sections.Where(x => x.Number >= number).ToList();
                 for (int i = 0; i < sections.Count; i++)
                 {
                     sections[i].Number += 1;
-                }
-                Console.WriteLine(sections.Max(x => x.Number));
+                }            
             }
 
             //  F5/c/3
@@ -169,9 +167,9 @@ namespace Bme.Aut.Logistics.Service
             }
             if (FindSectionByNumber(planId,nextNum) != null)
             {
+                plan.Sections.Insert(number,newSection);
                 plan.Sections[nextNum].FromMilestone = newSection.ToMilestone;
                 plan.Sections[nextNum].FromMilestoneId = newSection.ToMilestoneId;
-                plan.Sections.Insert(number,newSection);
                 dbContext.SaveChanges();
                 return;
             }
