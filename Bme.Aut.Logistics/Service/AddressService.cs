@@ -20,19 +20,31 @@ namespace Bme.Aut.Logistics.Service
         // Tipp 2: Sajnos nem tudja leforditani az EF a lekerdezest. Muszaj memoriaban csinalni az osszehasonlitast: dbContext.Addresses.ToList().Where(...
         public List<Address> FindByCityIgnoreCase(string city)
         {
-            throw new NotImplementedException();
+            return dbContext.Addresses.ToList().Where(c => c.City.Equals(city, StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
         // TODO: Megvalósítani az 4. b. feladat szerint
         public List<Address> FindByGeoLatBetweenAndGeoLngBetween(double minLat, double maxLat, double minLng, double maxLng)
         {
-            throw new NotImplementedException();
+            return dbContext.Addresses.ToList().Where(c => c.GeoLatitude <= maxLat
+                                                        && c.GeoLatitude > minLat
+                                                        && c.GeoLongitude <= maxLng
+                                                        && c.GeoLongitude > minLng).ToList();
         }
 
         // TODO: Megvalósítani a 4. c. feladat szerint
         public void RenameStreet(string country, string zipCode, string oldStreet, string newStreet)
         {
-            throw new NotImplementedException();
+             var addr = dbContext.Addresses.ToList().Where(x => x.Country.Equals(country, StringComparison.InvariantCultureIgnoreCase)
+                                                             && x.ZipCode.Equals(zipCode, StringComparison.InvariantCultureIgnoreCase)
+                                                             && x.Street.Equals(oldStreet, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        
+            foreach (var a in addr)
+            {
+                a.Street = newStreet;
+            }
+            dbContext.SaveChanges();
+            
         }
     }
 }

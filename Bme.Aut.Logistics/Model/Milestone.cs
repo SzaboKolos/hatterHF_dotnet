@@ -9,5 +9,13 @@ namespace Bme.Aut.Logistics.Model
         public Address Address { get; set; }
         public long AddressId { get; set; }
         public DateTime PlannedTime { get; set; }
+
+        public List<Action> Actions { get; set; }
+
+        override
+        public string ToString()
+        {
+            return ("MS: "+ Id + " [" + PlannedTime + "]");
+        }
     }
 }
